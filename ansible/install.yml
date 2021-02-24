@@ -1,0 +1,37 @@
+---
+- name: Install packer-windows-imaging-tools 
+  hosts: localhost
+  gather_facts: no
+  connection: local
+  vars:
+    edk2_url: https://www.kraxel.org/repos/jenkins/edk2/
+    fw_output_path: "{{ project_basepath }}/efi/OVMF-pure-efi.fd"
+  tasks:
+    - name: packer-windows-imaging-tools | Download Virtio drivers
+      get_url:
+        dest: "{{ project_basepath  }}/unattend_resources/virtio-win.iso"
+        url: https://fedorapeople.org/groups/virt/virtio-win/direct-downloads/latest-virtio/virtio-win.iso
+
+    - name: packer-windows-imaging-tools | Ensure OVMF firmware is downloaded
+      stat:
+          path: "{{ fw_output_path }}"
+          get_mime: no
+          get_checksum: no
+      register: ovmf_fw_stat
+
+    - name: packer-windows-imaging-tools | Determine the latest OVMF x64 firmware URL
+      shell: curl -s {{ edk2_url }} | sed -n 's/^.*href="\(edk2.git-ovmf-x64[^"]*\).*/\1/p'
+      register: ovmf_fw_filename
+      when: ovmf_fw_stat.stat and not ovmf_fw_stat.stat.exists
+      
+    - name: Download and extract firmware to project folder
+      when: ovmf_fw_filename is not skipped
+      shell: |
+        curl -s {{ ovmf_fw_url }} \
+        | tar -C {{ project_basepath }}/efi/ --include='**/OVMF-pure-efi.fd' --strip=5 -xf -
+      args:
+        creates: "{{ fw_output_path }}"
+      vars:
+        ovmf_fw_url: "{{ edk2_url}}/{{ ovmf_fw_filename.stdout }}"
+
+    

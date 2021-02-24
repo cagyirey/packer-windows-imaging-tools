@@ -1,0 +1,7 @@
+---
+- name: Generate Windows Image
+  hosts: all
+  tasks:
+    - name: Generate Windows Image
+      import_role:
+        name: generate_windows_image

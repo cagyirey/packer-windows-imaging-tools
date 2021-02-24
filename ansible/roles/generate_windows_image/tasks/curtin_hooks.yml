@@ -1,0 +1,11 @@
+- name: Curtin Hooks | Copy curtin hooks to C:/curtin
+  ansible.windows.win_copy:
+    src: A:/curtin
+    dest: C:/curtin
+    remote_src: yes
+
+# - name: Curtin Hooks | Copy curtin hooks to C:/curtin/curtin (mimic Cloudbase functionality)
+#   ansible.windows.win_copy:
+#     src: A:/curtin
+#     dest: C:/curtin/
+#     remote_src: yes

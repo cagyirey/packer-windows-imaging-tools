@@ -1,0 +1,14 @@
+- name: Halt the Windows Update Service 
+  ansible.windows.win_service:
+    name: wuauserv
+    state: stopped
+
+- name: Remove SoftwareDistribution folder
+  ansible.windows.win_file:
+    path: C:\Windows\SoftwareDistribution\Download
+    state: absent
+
+- name: Restart the Windows Update Service
+  ansible.windows.win_service:
+    name: wuauserv
+    state: restarted

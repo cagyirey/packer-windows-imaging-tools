@@ -1,0 +1,4 @@
+[submodule "unattend_resources/windows-curtin-hooks"]
+	path = unattend_resources/windows-curtin-hooks
+	url = https://github.com/cloudbase/windows-curtin-hooks
+	branch = master

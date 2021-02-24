@@ -1,0 +1,11 @@
+
+- name: Check if Powershell 7 is installed
+  ansible.windows.win_stat:
+    path: "{{ powershell7_path }}"
+  register: ps7_stat
+
+- name: Set PowerShell.exe as the default shell
+  ansible.windows.win_regedit:
+    path: "HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\WinLogon"
+    name: Shell
+    data: "{{ powershell7_path if ps7_stat.stat.exists else 'powershell.exe' }}"

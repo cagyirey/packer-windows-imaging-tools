@@ -1,0 +1,42 @@
+---
+
+# - name: Sysprep | Register scheduled task to Sysprep /generalize
+#   win_scheduled_task:
+#     name: sysprep-generalize
+#     username: SYSTEM
+#     disallow_start_if_on_batteries: no
+#     stop_if_going_on_batteries: no
+#     actions:
+#     - path: powershell.exe
+#       arguments: "/c C:\\windows\\system32\\sysprep\\sysprep.exe /generalize /oobe /quit /quiet /unattend:\"{{ deploy_unattend }}\"; schtasks.exe /Delete /TN \"sysprep-generalize\" /F"
+#     - path: 
+#     triggers:
+#     - type: registration
+
+# - name: Sysprep | Wait for sysprep to complete
+#   win_scheduled_task_stat:
+#     name: sysprep-generalize
+#     register: task_stat
+#     until: (task_stat.state is defined and task_stat.state.status != "TASK_STATE_RUNNING") or (task_stat.task_exists == False)
+#     retries: 15
+#     delay: 30
+#     async: 900
+#     poll: 30
+
+# - name: sysprep
+#   win_command: C:\windows\system32\sysprep\sysprep.exe /generalize /oobe /quit /quiet /unattend:"{{ deploy_unattend }}"
+
+# TODO: conditionally use this implementation if PersistAllDevices is false. sysprep will remove the network interface in such cases, disconnecting Ansible once this task starts.
+- name: Sysprep | Register scheduled task to Sysprep /generalize
+  win_scheduled_task:
+    name: sysprep-generalize
+    username: SYSTEM
+    disallow_start_if_on_batteries: no
+    stop_if_going_on_batteries: no
+    actions:
+    - path: powershell.exe
+      # arguments: "/c C:\\windows\\system32\\sysprep\\sysprep.exe /generalize /oobe /quit /quiet /unattend:\"{{ deploy_unattend }}\";  Optimize-Volume -DriveLetter C -SlabConsolidate -ReTrim -NormalPriority; shutdown.exe /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"; schtasks.exe /Delete /TN \"sysprep-generalize\" /F;"
+      arguments: "/c C:\\windows\\system32\\sysprep\\sysprep.exe /generalize /oobe /shutdown /quiet /unattend:\"{{ deploy_unattend }}\""
+    triggers:
+    - type: registration
+

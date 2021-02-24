@@ -1,0 +1,73 @@
+{
+  
+    "variables": {
+      "iso_url": "",
+      "hostname": "windows-imaging-tools",
+      "cpus": "4",
+      "memory": "2048",
+      "disk_size": "20480",
+      "output_filename": "windows-server-dd.tar.gz",
+      "autounattend_packer": "./unattend_resources/packer/qemu/Autounattend.xml",
+      "autounattend_deploy": "./unattend_resources/deploy/Deploy.xml",
+      "virtio_drivers_path": "./unattend_resources/virtio-win-0.1.190.iso",
+      "winrm_user": "Administrator",
+      "winrm_password": "packer",
+      "winrm_timeout": "30m",
+      "shutdown_timeout": "30m"
+    },
+    
+    "builders": [
+      {
+        "type": "qemu",
+        "format": "qcow2",
+        "accelerator": "hvf",
+        "net_device": "virtio-net",
+        "disk_interface": "virtio",
+        "qemuargs": [
+          ["-display", "cocoa"],
+          ["-cdrom", "{{ user `virtio_drivers_path` }}"]
+        ],
+
+        "cpus": "{{ user `cpus` }}",
+        "memory": "{{user `memory`}}",
+        "disk_size": "{{user `disk_size`}}",
+        
+        "communicator": "winrm",
+        "winrm_password": "{{user `winrm_password`}}",
+        "winrm_username": "{{user `winrm_user`}}",
+        "winrm_timeout": "{{user `winrm_timeout`}}",
+        "winrm_use_ssl": true,
+        "winrm_insecure": true,
+        "winrm_use_ntlm": true,
+        "pause_before_connecting": "3m",
+        "boot_wait": "15s",
+  
+        "iso_checksum": "none",
+        "iso_url": "{{ user `iso_url` }}",
+
+        "floppy_files": [ 
+          "{{ user `autounattend_packer` }}",
+          "{{ user `autounattend_deploy` }}",
+          "./scripts/enable-winrm.ps1",
+          "./unattend_resources/zapfree.exe"]
+
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "ansible",
+        "playbook_file": "./ansible/playbook.yml",
+        "user": "{{user `winrm_user`}}",
+        "use_proxy": false,
+        "extra_arguments": [
+          "-e", "ansible_winrm_server_cert_validation=ignore",
+          "-e", "winrm_password={{ user `winrm_password` }}",
+          "-e", "ansible_winrm_transport=ntlm", "-v" ]
+      }
+    ],
+    "post-processors": [
+
+    ]
+  }
+  
+  

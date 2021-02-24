@@ -1,0 +1,14 @@
+- name: Customization | Enable shutdown without logon
+  win_regedit:
+    path: "HKLM:\\Software\\Microsoft\\Windows\\Policies\\System"
+    name: ShutdownWithoutLogon
+    type: dword
+    data: "1"
+
+# NOTE: not clear what the impact is — appears to disable *all* shutdown notifications
+# - name: Customization | Disable shutdown prompts
+#   win_regedit:
+#     path: "HKLM:\\Software\\Microsoft\\Windows NT\\CurrentVersion\\Windows"
+#     name: ShutdownWarningDialogTimeout
+#     type: dword
+#     data: "1"

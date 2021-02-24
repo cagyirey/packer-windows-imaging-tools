@@ -1,0 +1,17 @@
+license_key: ""
+install_windows_updates: false
+install_maas_hooks: true
+deploy_unattend: "A:/Deploy_Specialize.xml"
+
+extra_capabilities: []
+drivers: []
+persist_drivers: false
+
+enable_custom_wallpaper: false
+
+### Windows client version settings ###
+
+# Whether to enable admin on client versions of Windows 
+enable_admin_account: false
+
+disable_first_logon_animation: false

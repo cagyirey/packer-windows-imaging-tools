@@ -1,0 +1,7 @@
+---
+- name: Copy specialize scripts to C:\unattend_resources
+  win_copy:
+      src: "{{ item }}"
+      dest: C:\unattend_resources\
+      remote_src: false
+      loop: "{{ specialize_scripts }}"

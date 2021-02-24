@@ -1,0 +1,11 @@
+---
+- name: Consolidate free space
+  win_shell: Optimize-Volume -DriveLetter C -Defrag -SlabConsolidate -ReTrim -NormalPriority
+
+# Ansible doesn't support trim or slab consolidation. poorly coded module lol
+# - name: Consolidate free space
+#   community.windows.win_defrag:
+#     include_volumes: [ C ]
+#     freespace_consolidation: yes
+#     priority: normal
+    

@@ -1,0 +1,30 @@
+---
+
+# Installation
+
+- name: Install Curtin Hooks
+  import_tasks: curtin_hooks.yml
+  when: install_maas_hooks is defined and install_maas_hooks
+
+- name: Install Windows Updates
+  import_tasks: windows_update.yml
+  when: install_windows_updates is defined and install_windows_updates
+
+# Configuration
+
+- name: Disable hybrid boot
+  import_tasks: disable_fast_startup.yml
+
+# Clean up
+
+- name: Disk Cleanup
+  import_tasks: disk_cleanup.yml
+
+- name: Compact Disk
+  import_tasks: compact.yml
+
+- name: Shrink Partition
+  import_tasks: partition.yml
+
+- name: Sysprep Generalize
+  import_tasks: sysprep.yml

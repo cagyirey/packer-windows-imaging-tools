@@ -1,0 +1,16 @@
+---
+- name: Partitioning | Get minimum supported disk size
+  win_shell: (Get-PartitionSupportedSize -DriveLetter C).SizeMin
+  register: partition_size_result
+
+- name: Partitioning | Shrink partition logical size
+  win_partition:
+      partition_size: "{{ partition_size }}B"
+      drive_letter: C
+  vars:
+    step_size: "{{ '100MB' | human_to_bytes | int }}"
+    raw_partition_size: "{{ partition_size_result.stdout | int | human_readable(unit='M') | human_to_bytes }}"
+    partition_size: "{{ (raw_partition_size | int) // (step_size | int) * (step_size | int) + (step_size | int) }}"
+
+
+  

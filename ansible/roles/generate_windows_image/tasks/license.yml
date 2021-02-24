@@ -1,0 +1,10 @@
+---
+# - name: License | Collect product and activation facts
+#   community.windows.win_product_facts:
+
+- name: License | Activate Windows
+  win_shell: cscript slmgr.vbs /ipk {{ win_license_key }}
+  args:
+    chdir: C:\Windows\System32\
+    
+

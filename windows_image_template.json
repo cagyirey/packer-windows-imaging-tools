@@ -1,0 +1,90 @@
+{
+    "variables": {
+      "iso_url": "",
+      "hostname": "windows-imaging-tools",
+      "cpus": "4",
+      "memory": "2048",
+      "disk_size": "40960",
+      "output_filename": "windows-server-dd.tar.gz",
+      "autounattend_packer": "./unattend_resources/packer/Autounattend.xml",
+      "autounattend_deploy": "./unattend_resources/deploy/Deploy.xml",
+      "winrm_user": "Administrator",
+      "winrm_password": "packer",
+      "winrm_timeout": "30m",
+      "shutdown_timeout": "30m"
+    },
+    "builders": [
+      {
+        "type": "virtualbox-iso",
+        "cpus": "{{ user `cpus` }}",
+        "memory": "{{user `memory`}}",
+        "disk_size": "{{user `disk_size`}}",
+        
+        "guest_os_type": "Windows2016_64",
+        "vm_name": "PackerWindows",
+        
+        "guest_additions_mode": "disable",
+
+        "communicator": "winrm",
+        "winrm_password": "{{user `winrm_password`}}",
+        "winrm_username": "{{user `winrm_user`}}",
+        "winrm_timeout": "{{user `winrm_timeout`}}",
+        "winrm_use_ssl": true,
+        "winrm_insecure": true,
+        "winrm_use_ntlm": true,
+  
+        "boot_wait": "15s",
+        "disable_shutdown": true,
+        "shutdown_timeout":"{{ user `shutdown_timeout`}}",
+        "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+  
+        "iso_checksum": "none",
+        "iso_url": "{{ user `iso_url` }}",
+
+        "floppy_files": [ 
+          "{{ user `autounattend_packer` }}",
+          "{{ user `autounattend_deploy` }}",
+          "./scripts/enable-winrm.ps1",
+          "./unattend_resources/zapfree.exe"],
+
+        "vboxmanage": [
+          ["modifyvm", "{{.Name}}", "--memory", "2048"],
+          ["modifyvm", "{{.Name}}", "--cpus", "4"]
+         ],
+        "vboxmanage_post": [
+          [ "modifymedium", "disk", "output-{{build_name}}/{{.Name}}.vdi", "--compact"]
+        ]
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "ansible",
+        "playbook_file": "./ansible/playbook.yml",
+        "user": "{{user `winrm_user`}}",
+        "use_proxy": false,
+        "extra_arguments": [
+          "-e", "ansible_winrm_server_cert_validation=ignore",
+          "-e", "winrm_password={{ user `winrm_password` }}",
+          "-e", "ansible_winrm_transport=ntlm", "-v" ]
+      }
+    ],
+    "post-processors": [
+      {
+        "type": "shell-local",
+        "inline": [
+          "qemu-img convert -p -O raw $(ls output-{{ build_name }}/*.vmdk) output-{{ build_name }}/{{.Name}}.raw"]
+      },
+      [
+        {
+          "type": "artifice",
+          "files": ["output-{{ build_name }}/{{.Name}}.raw"]
+        },
+        {
+          "type": "compress",
+          "output": "{{ user `output_filename` }}"
+        }
+      ]
+    ]
+  }
+  
+  
