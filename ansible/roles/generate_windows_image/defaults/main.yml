@@ -1,7 +1,7 @@
 license_key: ""
 install_windows_updates: false
 install_maas_hooks: true
-deploy_unattend: "A:/Deploy_Specialize.xml"
+deploy_unattend: "A:/Deploy.xml"
 
 extra_capabilities: []
 drivers: []

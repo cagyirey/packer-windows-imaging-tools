@@ -8,6 +8,7 @@
     "vm_name": "packer-qemu",
     "cpu_cores": "4",
     "threads_per_core": "2",
+    "cpu_emulator": "Icelake-Client",
     "memory": "2048",
     "disk_size": "20480",
 
@@ -36,7 +37,7 @@
       "disk_detect_zeroes": "unmap",
 
       "qemuargs": [
-        ["-cpu", "Icelake-Client"],
+        ["-cpu", "{{ user `cpu_emulator` }}"],
         ["-smp", "cores={{ user `cpu_cores` }},threads={{ user `threads_per_core` }}"],
         ["-global", "driver=cfi.pflash01,property=secure,value=on"],
         ["-drive", "if=pflash,file={{ user `efi_firmware_path` }},format=raw,unit=0,readonly=on" ],
