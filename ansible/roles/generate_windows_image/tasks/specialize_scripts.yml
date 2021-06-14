@@ -1,7 +1,22 @@
 ---
+<<<<<<< Updated upstream
 - name: Copy specialize scripts to C:\unattend_resources
   win_copy:
       src: "{{ item }}"
       dest: C:\unattend_resources\
       remote_src: false
       loop: "{{ specialize_scripts }}"
+=======
+- name: Specialize Scripts | Copy specialize script to UserScripts directory
+  win_copy:
+    src: "{{ project_dir }}/scripts/Specialize.ps1"
+    dest: "{{ cloudbase_install_path }}\\LocalScripts\\"
+    remote_src: no
+
+- name: Specialize Scripts | Copy user scripts to C:\unattend_resources
+  win_copy:
+    src: "{{ item }}"
+    dest: "C:\\unattend_resources\\"
+    remote_src: no
+  loop: "{{ specialize_scripts }}"
+>>>>>>> Stashed changes

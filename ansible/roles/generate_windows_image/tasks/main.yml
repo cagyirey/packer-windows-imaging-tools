@@ -10,11 +10,32 @@
   import_tasks: windows_update.yml
   when: install_windows_updates is defined and install_windows_updates
 
+<<<<<<< Updated upstream
 # Configuration
+=======
+- name: Install Extra Capabilities
+  import_tasks: extra_capabilities.yml
+  when: extra_capabilities is defined and (extra_capabilities|length>0)
+
+- name: Install Extra MSI Packages
+  import_tasks: extra_msi_packages.yml
+  when: extra_msi_package_dirs is defined and (extra_msi_package_dirs|length>0)
+
+- name: Install Windows Admin Center
+  import_tasks: windows_admin_center.yml
+  when: install_windows_admin_center is defined and install_windows_admin_center
+>>>>>>> Stashed changes
 
 - name: Disable hybrid boot
   import_tasks: disable_fast_startup.yml
 
+<<<<<<< Updated upstream
+=======
+- name: Copy Deployment Scripts
+  import_tasks: specialize_scripts.yml
+  when: specialize_scripts is defined and (specialize_scripts|length>0)
+  
+>>>>>>> Stashed changes
 # Clean up
 
 - name: Disk Cleanup

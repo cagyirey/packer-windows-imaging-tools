@@ -9,3 +9,15 @@ output-*
 *.fd
 
 .DS_Store
+<<<<<<< Updated upstream
+=======
+
+*.gz
+*.zip
+*.tar
+*.lz4
+*_tempfile.ps1
+
+
+drivers/
+>>>>>>> Stashed changes

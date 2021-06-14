@@ -1,0 +1,6 @@
+---
+
+- name: Windows Capabilities | Installing extra capabilities
+  win_shell: Add-WindowsCapability -Online -Name "{{ item }}"
+  loop: "{{ extra_capabilities }}"
+  when: extra_capabilities is defined and (extra_capabilities|length>0)

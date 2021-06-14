@@ -3,22 +3,28 @@
     "iso_url": "",
 
     "output_path": "output-qemu",
-    "output_filename": "windows-server-dd.gz",
+    "output_filename": "windows-server-dd.tar.gz",
+    "output_format": ".tar.gz",
     
     "vm_name": "packer-qemu",
     "cpu_cores": "4",
     "threads_per_core": "2",
-    "memory": "2048",
+    "cpu_emulator": "Icelake-Server",
+    "memory": "6144",
     "disk_size": "20480",
+
+    "headless": "true",
 
     "winrm_user": "Administrator",
     "winrm_password": "packer",
     "winrm_timeout": "30m",
     
-    "autounattend_packer": "./unattend_resources/autounattend/efi/virtio/Autounattend.xml",
-    "autounattend_deploy": "./unattend_resources/autounattend/deploy/Deploy.xml",
+    "autounattend_packer": "./unattend_resources/autounattend/efi/virtio/2k22/Autounattend.xml",
+    "autounattend_deploy": "./unattend_resources/autounattend/deploy/Deploy_Specialize.xml",
     "virtio_drivers_path": "./unattend_resources/virtio-win.iso",
     "curtin_hooks_path": "./unattend_resources/windows-curtin-hooks/curtin",
+    "extra_installers_path":  "./unattend_resources/msi/" ,
+    "drivers_path": "./drivers/",
     "efi_firmware_path": "./efi/OVMF-pure-efi.fd"
   },
   
@@ -31,25 +37,30 @@
       "display": "cocoa",
       "net_device": "virtio-net",
       "disk_interface": "virtio-scsi",
+      "headless": "{{ user `headless` }}",
 
       "disk_discard": "unmap",
       "disk_detect_zeroes": "unmap",
 
       "qemuargs": [
-        ["-cpu", "Icelake-Client"],
+        ["-cpu", "{{ user `cpu_emulator` }}"],
         ["-smp", "cores={{ user `cpu_cores` }},threads={{ user `threads_per_core` }}"],
         ["-global", "driver=cfi.pflash01,property=secure,value=on"],
         ["-drive", "if=pflash,file={{ user `efi_firmware_path` }},format=raw,unit=0,readonly=on" ],
 
+        
         ["-device", "virtio-scsi-pci,id=scsi0"],
-        ["-device", "scsi-hd,bus=scsi0.0,drive=drive0"],
+        ["-device", "scsi-hd,drive=drive0,bus=scsi0.0"],
         ["-drive", "if=none,file={{ .OutputDir }}/{{ user `vm_name` }},id=drive0,cache=writeback,discard=unmap,format=raw,detect-zeroes=unmap,index=1"],
 
-        ["-device", "nec-usb-xhci"],
         ["-drive", "if=none,file={{ user `iso_url` }},id=usb0,media=cdrom,format=raw,readonly=on,index=0"],
         ["-drive", "if=none,file={{ user `virtio_drivers_path` }},id=cdrom0,media=cdrom,format=raw,readonly=on,index=2"],
+        ["-drive", "if=none,file=fat:rw:{{ user `drivers_path` }},id=cdrom1,media=disk,format=raw,readonly=off,index=3"],
+
+        ["-device", "nec-usb-xhci,id=xhci"],
+        ["-device", "usb-storage,drive=usb0"],
         ["-device", "usb-storage,drive=cdrom0"],
-        ["-device", "usb-storage,drive=usb0"]
+        ["-device", "usb-storage,drive=cdrom1"]
       ],
       
       "memory": "{{user `memory`}}",
@@ -59,8 +70,6 @@
       "winrm_password": "{{user `winrm_password`}}",
       "winrm_username": "{{user `winrm_user`}}",
       "winrm_timeout": "{{user `winrm_timeout`}}",
-      "winrm_use_ssl": true,
-      "winrm_insecure": true,
       "winrm_use_ntlm": true,
       "boot_wait": "1s",
       "boot_command": "<enter>",
@@ -74,22 +83,20 @@
       "floppy_files": [ 
         "{{ user `autounattend_packer` }}",
         "{{ user `autounattend_deploy` }}",
-        "./scripts/enable-winrm.ps1"],
-      "floppy_dirs": [
-        "{{ user `curtin_hooks_path` }}"
-      ]
+        "./scripts/enable-winrm.ps1"]
     }
+    
   ],
   "provisioners": [
-    {
+    {      
       "type": "ansible",
       "playbook_file": "./ansible/build.yml",
-      "user": "{{user `winrm_user`}}",
+      "user": "{{ user `winrm_user` }}",
       "use_proxy": false,
       "extra_arguments": [
-        "-e", "ansible_winrm_server_cert_validation=ignore",
         "-e", "winrm_password={{ user `winrm_password` }}",
-        "-e", "ansible_winrm_transport=ntlm" ]
+        "-e", "ansible_winrm_transport=ntlm",
+        "-e", "ansible_winrm_scheme=http"]
     }
   ],
   "post-processors": [
@@ -100,7 +107,7 @@
     },
     {
       "type": "compress",
-      "output": "{{ user `output_path` }}/{{ user `output_filename` }}",
+      "output": "{{ user `output_filename` }}",
       "compression_level": 9
     }
   ]

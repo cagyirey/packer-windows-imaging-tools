@@ -3,7 +3,7 @@
       "iso_url": "",
       "hostname": "windows-imaging-tools",
       "cpus": "4",
-      "memory": "2048",
+      "memory": "4096",
       "disk_size": "40960",
       "output_filename": "windows-server-dd.tar.gz",
       "autounattend_packer": "./unattend_resources/packer/Autounattend.xml",
@@ -57,6 +57,7 @@
       }
     ],
     "provisioners": [
+
       {
         "type": "ansible",
         "playbook_file": "./ansible/playbook.yml",

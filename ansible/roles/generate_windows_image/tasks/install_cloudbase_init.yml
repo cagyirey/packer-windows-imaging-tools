@@ -1,2 +1,60 @@
 ---
+<<<<<<< Updated upstream
 - name: Install Cloudbase Init MSI
+=======
+- name: Cloudbase-Init | Download and install Cloudbase-Init
+  win_package:
+    state: present
+    creates_service: cloudbase-init
+    path: https://cloudbase.it/downloads/CloudbaseInitSetup_x64.msi
+    arguments: "{{ use_local_system if run_cloudbase_init_as_localsystem is defined and run_cloudbase_init_as_localsystem | default(omit) }}"
+  vars:
+    use_local_system: "RUN_SERVICE_AS_LOCAL_SYSTEM=1"
+    # this can be a very long-running install
+    ansible_winrm_operation_timeout_sec: 600
+    ansible_winrm_read_timeout_sec: 900
+  register: cloudbase_install_result
+
+# - name: Cloudbase-Init | Set Cloudbase-Init service to manual start
+#   win_service:
+#     name: cloudbase-init
+#     start_mode: auto
+#   when: cloudbase_install_result is succeeded
+#   register: cloudbase_delayed_auto_result
+
+- name: Cloudbase-Init | Create temporary folder for configuration files
+  delegate_to: localhost
+  connection: local
+  tempfile:
+    prefix: packer-cloudbase-init
+    state: directory
+  register: cloudbase_init_tmp_dir
+  vars:
+    ansible_connection: local
+
+- name: Cloudbase-Init | Fetch configuration from guest
+  fetch:
+      src: "{{ cloudbase_install_path }}\\conf\\cloudbase-init.conf"
+      dest: "{{ cloudbase_init_tmp_dir.path }}/"
+      flat: yes
+  register: cloudbase_init_tmp_conf
+
+- name: Cloudbase-Init | Configure Cloudbase-Init
+  delegate_to: localhost
+  community.general.ini_file:
+    path: "{{ cloudbase_init_tmp_dir.path }}/cloudbase-init.conf"
+    section: "{{ item.section }}"
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+    create: no
+  loop: "{{ cloudbase_config_options }}"
+  when: cloudbase_init_tmp_conf is succeeded and (cloudbase_config_options|length>0)
+  vars:
+    ansible_connection: local
+
+- name: Cloudbase-Init | Upload configuration file
+  ansible.windows.win_copy:
+    src: "{{ cloudbase_init_tmp_dir.path }}/cloudbase-init.conf"
+    dest: "{{ cloudbase_install_path }}\\conf\\cloudbase-init.conf"
+    remote_src: no
+>>>>>>> Stashed changes

@@ -1,13 +1,49 @@
+<<<<<<< Updated upstream
+=======
+##### Static variables #####
+
+project_dir: "{{ playbook_dir }}/.."
+cloudbase_install_path: "/Program Files/Cloudbase Solutions/Cloudbase-Init"
+
+# Default path to Overriden by Packer
+sysprep_deploy_unattend: "A:/Deploy_Specialize.xml"
+
+
+>>>>>>> Stashed changes
 license_key: ""
-install_windows_updates: false
+install_windows_updates: true
 install_maas_hooks: true
+<<<<<<< Updated upstream
 deploy_unattend: "A:/Deploy_Specialize.xml"
+=======
+
+# Size of the OS image. 
+image_boot_partition_size: "16GB"
+
+
+install_cloudbase_init: true
+run_cloudbase_init_as_localsystem: true
+cloudbase_init_delayed_start: true
+
+
+# NOTE: This is broken due to the installer resetting WinRM and upsetting Packer
+#install_windows_admin_center: false
+
+cloudbase_config_options: []
+>>>>>>> Stashed changes
 
 extra_capabilities: []
 drivers: []
 persist_drivers: false
 
+<<<<<<< Updated upstream
 enable_custom_wallpaper: false
+=======
+extra_capabilities: []
+extra_msi_package_dirs: []
+
+# custom_wallpaper_path: false
+>>>>>>> Stashed changes
 
 ### Windows client version settings ###
 

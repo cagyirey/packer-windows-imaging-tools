@@ -35,8 +35,14 @@
     stop_if_going_on_batteries: no
     actions:
     - path: powershell.exe
+<<<<<<< Updated upstream
       # arguments: "/c C:\\windows\\system32\\sysprep\\sysprep.exe /generalize /oobe /quit /quiet /unattend:\"{{ deploy_unattend }}\";  Optimize-Volume -DriveLetter C -SlabConsolidate -ReTrim -NormalPriority; shutdown.exe /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"; schtasks.exe /Delete /TN \"sysprep-generalize\" /F;"
       arguments: "/c C:\\windows\\system32\\sysprep\\sysprep.exe /generalize /oobe /shutdown /quiet /unattend:\"{{ deploy_unattend }}\""
+=======
+      arguments: "/c \"Set-Item WSMan:\\localhost\\Service\\AllowUnencrypted $false\""
+    - path: C:\\windows\\system32\\sysprep\\sysprep.exe
+      arguments: "/generalize /oobe /shutdown /quiet /unattend:\"{{ sysprep_deploy_unattend }}\""
+>>>>>>> Stashed changes
     triggers:
     - type: registration
 
