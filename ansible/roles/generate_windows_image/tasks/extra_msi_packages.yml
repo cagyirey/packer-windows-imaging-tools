@@ -1,0 +1,15 @@
+---
+- name: Extra Packages | Copying packages to target machine
+  win_copy:
+      src: "{{ item }}"
+      dest: "{{ remote_tmp }}"
+      remote_src: no
+  register: msi_upload_result
+
+- name: Extra Packages | Installing extra packages
+  win_package:
+    path: "{{ item.dest }}"
+  loop: "{{ msi_upload_result.results }}"
+  when: msi_upload_result is succeeded
+
+  
