@@ -20,17 +20,8 @@
     - name: Partitioning | Re-attempt partitioning
       include_tasks: partition.yml
   vars:
-<<<<<<< Updated upstream
-    step_size: "{{ '100MB' | human_to_bytes | int }}"
-    raw_partition_size: "{{ partition_size_result.stdout | int | human_readable(unit='M') | human_to_bytes }}"
-    partition_size: "{{ (raw_partition_size | int) // (step_size | int) * (step_size | int) + (step_size | int) }}"
-
-
-=======
     retries: 20
     step_size: "{{ ('100MB'|human_to_bytes|int) }}"
     actual_size: "{{partition_size_result.stdout|int|human_readable(unit='M')|human_to_bytes|int}}"
     used_partition_size: "{{ actual_size if image_boot_partition_size is not defined else (image_boot_partition_size|human_to_bytes|int) }}"
     partition_size: "{{ (used_partition_size|int) // (step_size|int) * (step_size|int) + (step_size|int * retry_count|default(0)|int) }}"
->>>>>>> Stashed changes
-  

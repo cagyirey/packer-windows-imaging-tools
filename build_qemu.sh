@@ -6,10 +6,4 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 fi
 
-<<<<<<< Updated upstream
 packer build --only=qemu -var "iso_url=$1" ./qemu_template_efi.json "${all_args[@]:2}"
-=======
-ansible-lint ansible/build.yml \
-&& PACKER_LOG=1 packer build --only=qemu -var "iso_url=$1" ./qemu_template_efi_insecure.json "${all_args[@]:2}"
->>>>>>> Stashed changes
-

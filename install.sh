@@ -17,16 +17,13 @@ function ensure_dependencies () {
 }
 
 function ansible_install () {
-<<<<<<< Updated upstream
     pushd $(dirname "$0")
-=======
 
     if [[ "$OSTYPE" == "darwin"* ]]; then
         # Ansible requires this variable or python fork() will break it on MacOS
         export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
     fi  
     
->>>>>>> Stashed changes
     ansible-lint ansible/install.yml \
     && ansible-playbook ansible/install.yml \
         -e "project_basepath=$(pwd)"

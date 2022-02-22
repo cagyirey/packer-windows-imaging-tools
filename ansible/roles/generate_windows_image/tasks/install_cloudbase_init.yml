@@ -1,7 +1,4 @@
 ---
-<<<<<<< Updated upstream
-- name: Install Cloudbase Init MSI
-=======
 - name: Cloudbase-Init | Download and install Cloudbase-Init
   win_package:
     state: present
@@ -57,4 +54,3 @@
     src: "{{ cloudbase_init_tmp_dir.path }}/cloudbase-init.conf"
     dest: "{{ cloudbase_install_path }}\\conf\\cloudbase-init.conf"
     remote_src: no
->>>>>>> Stashed changes

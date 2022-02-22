@@ -1,6 +1,6 @@
 ---
 
-#extra_capabilities: [ "OpenSSH.Server~~~~0.0.1.0" ]
+extra_capabilities: [ "OpenSSH.Server~~~~0.0.1.0" ]
 specialize_scripts: [ "/Users/spacecadet/Workspace/etc/deploy_scripts" ]
 
 image_boot_partition_size: "16GB"
@@ -13,6 +13,3 @@ cloudbase_config_options:
   - section: DEFAULT
     option: winrm_enable_basic_auth
     value: "false"
-
-
-    

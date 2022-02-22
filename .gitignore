@@ -19,5 +19,4 @@ output-*
 *_tempfile.ps1
 
 
-drivers/
->>>>>>> Stashed changes
+drivers
