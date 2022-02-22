@@ -9,8 +9,6 @@ output-*
 *.fd
 
 .DS_Store
-<<<<<<< Updated upstream
-=======
 
 *.gz
 *.zip
